@@ -26,7 +26,7 @@ var config = {
     loginUser(username);
 
 
-    window.location.replace("http://spot-the-human.firebaseapp.com/game");
+    window.location.replace("https://spot-the-human.herokuapp.com/game");
   }
   
   // Function to get get form values
