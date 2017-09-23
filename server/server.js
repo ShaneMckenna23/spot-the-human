@@ -58,6 +58,7 @@ function init () {
   // Start listening for events
   setEventHandlers()
   startGameTimer()
+  testBot()
 }
 
 function startGameTimer(){
@@ -93,8 +94,6 @@ function onSocketConnection (client) {
   client.on('move player', onMovePlayer)
 
   socket.sockets.emit('game time',{currentGameTime: currentGameTime,gameTime:gameTime,intermissionTime:intermissionTime,isIntermission:isIntermission})
-
-  setTimeout(function(){testBot()},2000)
 }
 
 // Socket client has disconnected
@@ -173,7 +172,7 @@ function playerById (id) {
 // New player has joined
 function testBot () {
   // Create a new player
-  var newPlayer = new Player(0, 0)
+  var newPlayer = new Player(400, 300)
   newPlayer.id = "testBot"
 
   // Broadcast new player to connected socket clients
@@ -182,8 +181,37 @@ function testBot () {
   setInterval(function(){
     if(newPlayer.getX()>800){
       newPlayer.setX(-20)
-    }  
-    newPlayer.setX(newPlayer.getX()+2.5)
+    }
+
+    if(newPlayer.getX()<0){
+      newPlayer.setX(810)
+    }
+    
+    if(newPlayer.getY()>600){
+      newPlayer.setY(-20)
+    } 
+
+    if(newPlayer.getY()<0){
+      newPlayer.setY(610)
+    } 
+    var lastIndex, rand;
+    
+    while ((rand = Math.floor(Math.random() * 4)) === lastIndex);
+
+    switch(rand){
+      case 0:
+        newPlayer.setX(newPlayer.getX()+2.5)
+      break;
+      case 1:
+        newPlayer.setX(newPlayer.getX()-2.5)
+      break;
+      case 2:
+        newPlayer.setY(newPlayer.getY()+2.5)
+      break;
+      case 3:
+        newPlayer.setY(newPlayer.getY()-2.5)
+      break;
+    }
     socket.sockets.emit('move player', { id: newPlayer.id, x: newPlayer.getX(), y:newPlayer.getY()} )  
   },10)
   // Add new player to the players array
