@@ -184,7 +184,7 @@ function testBot () {
     }
 
     if(newPlayer.getX()<0){
-      newPlayer.setX(810)
+      newPlayer.setX(800)
     }
     
     if(newPlayer.getY()>600){
@@ -192,7 +192,7 @@ function testBot () {
     } 
 
     if(newPlayer.getY()<0){
-      newPlayer.setY(610)
+      newPlayer.setY(600)
     } 
     var lastIndex, rand;
     
