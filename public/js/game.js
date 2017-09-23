@@ -167,7 +167,7 @@ function update() {
     }
 
     if(game.input.activePointer.leftButton.isDown){
-      
+      isPlayer(game.input.activePointer.x)
     }
 
     game.world.wrap(player, 0, true);
@@ -190,3 +190,20 @@ function playerById (id) {
   
     return false
   }
+
+function isPlayer (x) {
+  for (var i = 0; i < enemies.length; i++) {
+    var pos = enemies[i].player.x
+    if ( x > pos-25 && x < pos+25) {
+      increaseScore()
+    }
+  }
+  return false
+}
+
+var score = 0;
+
+function increaseScore(){
+  score++;
+  document.getElementById('score').innerHTML = "Score: " + score
+}
