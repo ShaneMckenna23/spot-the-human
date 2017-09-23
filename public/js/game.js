@@ -167,7 +167,7 @@ function update() {
     }
 
     if(game.input.activePointer.leftButton.isDown){
-      isPlayer(game.input.activePointer.x)
+      isPlayer(game.input.activePointer.x,game.input.activePointer.y)
     }
 
     game.world.wrap(player, 0, true);
@@ -191,11 +191,14 @@ function playerById (id) {
     return false
   }
 
-function isPlayer (x) {
+function isPlayer (x,y) {
   for (var i = 0; i < enemies.length; i++) {
-    var pos = enemies[i].player.x
-    if ( x > pos-25 && x < pos+25) {
-      increaseScore()
+    var xPos = enemies[i].player.x
+    var yPos = enemies[i].player.y
+    if ( x > xPos-30 && x < xPos+30) {
+      if( y > yPos-30 && y < yPos+30){
+        increaseScore()
+      }
     }
   }
   return false

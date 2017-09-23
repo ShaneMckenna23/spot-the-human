@@ -193,10 +193,9 @@ function testBot () {
 
     if(newPlayer.getY()<0){
       newPlayer.setY(600)
-    } 
-    var lastIndex, rand;
-    
-    while ((rand = Math.floor(Math.random() * 4)) === lastIndex);
+    }
+        
+    var rand = Math.floor(Math.random() * 4);
 
     switch(rand){
       case 0:
