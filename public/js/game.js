@@ -12,6 +12,12 @@ var socket // Socket connection
 
 var enemies
 
+var currentGameTime = 10000
+
+var gameTime = 10000
+var intermissionTime = 5000
+var isIntermission = true
+
 function create() {
     socket = io.connect()
 
@@ -26,6 +32,8 @@ function create() {
     game.camera.follow(player);
 
     cursors = game.input.keyboard.createCursorKeys();
+
+    game.input.mouse.capture = true;
 
     enemies = []
 
@@ -47,8 +55,32 @@ var setEventHandlers = function () {
   
     // Player removed message received
     socket.on('remove player', onRemovePlayer)
+
+    socket.on('game time', initTime)
   }
   
+  function initTime(data){
+    currentGameTime = data.currentGameTime
+    isIntermission = data.isIntermission
+    startGameTimer();
+    gameTime = data.gameTime
+    intermissionTime = data.intermissionTime
+  }
+
+  function startGameTimer(){
+    var clock = setInterval(function(){
+      if(currentGameTime === 0){
+        if(isIntermission){
+          currentGameTime = intermissionTime
+        }else{
+          currentGameTime = gameTime 
+        }
+        isIntermission = !isIntermission
+      }
+      currentGameTime = currentGameTime - 1000;
+    }, 1000);
+  }
+
   // Socket connected
   function onSocketConnected () {
     console.log('Connected to socket server')
@@ -118,21 +150,26 @@ var setEventHandlers = function () {
 function update() {
     if (cursors.left.isDown)
     {
-        player.x -= 4;
+        player.x -= 3;
     }
     else if (cursors.right.isDown)
     {
-        player.x += 4;
+        player.x += 3;
     }
 
     if (cursors.up.isDown)
     {
-        player.y -= 4;
+        player.y -= 3;
     }
     else if (cursors.down.isDown)
     {
-        player.y += 4;
+        player.y += 3;
     }
+
+    if(game.input.activePointer.leftButton.isDown){
+      
+    }
+
     game.world.wrap(player, 0, true);
 
     socket.emit('move player', { x: player.x, y: player.y})

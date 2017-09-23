@@ -2,6 +2,7 @@ var http = require('http')
 var path = require('path')
 var ecstatic = require('ecstatic')
 var io = require('socket.io')
+var easystarjs = require("easystarjs")
 
 var Player = require('./Player')
 
@@ -13,6 +14,22 @@ var players	// Array of connected players
 /* ************************************************
 ** GAME VARIABLES
 ************************************************ */
+var currentGameTime = 10000
+
+var gameTime = 10000
+var intermissionTime = 5000
+var isIntermission = true
+
+var easystar = new easystarjs.js();
+var grid = [[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0]];
+
+easystar.setGrid(grid);
+
+easystar.setAcceptableTiles([0]);
 
 
 /* ************************************************
@@ -33,12 +50,28 @@ var server = http.createServer(
 function init () {
   // Create an empty array to store players
   players = []
+  bots = []
 
   // Attach Socket.IO to server
   socket = io.listen(server)
 
   // Start listening for events
   setEventHandlers()
+  startGameTimer()
+}
+
+function startGameTimer(){
+  var clock = setInterval(function(){
+    if(currentGameTime === 0){
+      if(isIntermission){
+        currentGameTime = intermissionTime
+      }else{
+        currentGameTime = gameTime 
+      }
+      isIntermission = !isIntermission
+    }
+    currentGameTime = currentGameTime - 1000;
+  }, 1000);
 }
 
 var setEventHandlers = function () {
@@ -58,6 +91,10 @@ function onSocketConnection (client) {
 
   // Listen for move player message
   client.on('move player', onMovePlayer)
+
+  socket.sockets.emit('game time',{currentGameTime: currentGameTime,gameTime:gameTime,intermissionTime:intermissionTime,isIntermission:isIntermission})
+
+  setTimeout(function(){testBot()},2000)
 }
 
 // Socket client has disconnected
@@ -101,7 +138,6 @@ function onNewPlayer (data) {
 
 // Player has moved
 function onMovePlayer (data) {
-  console.log("move" + data)
   // Find player in array
   var movePlayer = playerById(this.id)
 
@@ -132,4 +168,24 @@ function playerById (id) {
   }
 
   return false
+}
+
+// New player has joined
+function testBot () {
+  // Create a new player
+  var newPlayer = new Player(0, 0)
+  newPlayer.id = "testBot"
+
+  // Broadcast new player to connected socket clients
+  socket.sockets.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
+
+  setInterval(function(){
+    if(newPlayer.getX()>800){
+      newPlayer.setX(-20)
+    }  
+    newPlayer.setX(newPlayer.getX()+2.5)
+    socket.sockets.emit('move player', { id: newPlayer.id, x: newPlayer.getX(), y:newPlayer.getY()} )  
+  },10)
+  // Add new player to the players array
+  players.push(newPlayer)
 }

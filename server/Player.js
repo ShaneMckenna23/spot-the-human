@@ -5,6 +5,7 @@ var Player = function (startX, startY) {
     var x = startX
     var y = startY
     var id
+    var score
   
     // Getters and setters
     var getX = function () {
@@ -13,6 +14,14 @@ var Player = function (startX, startY) {
   
     var getY = function () {
       return y
+    }
+    
+    var getScore = function () {
+      return score
+    }
+
+    var setScore = function (newScore) {
+      score = newScore
     }
 
     var setX = function (newX) {
