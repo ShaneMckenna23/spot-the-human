@@ -31,7 +31,6 @@ function findUser(username){
       for (item in data.user) {
         var user = data.user[item].username
         if(user == username){
-          console.log("User found: " + user + " = " + username)
           userDataKey = item
           return processUser(data.user[item])
         }

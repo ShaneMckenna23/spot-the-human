@@ -59,6 +59,7 @@ function init () {
   setEventHandlers()
   startGameTimer()
   badBot()
+  badBot()
 }
 
 function startGameTimer(){
@@ -174,7 +175,9 @@ var badbotcount = 1
 // New player has joined
 function badBot () {
   // Create a new player
-  var newPlayer = new Player(400, 300)
+  var startX = Math.round(Math.random() * (400) + 200)
+  var startY = Math.round(Math.random() * (350) + 150)
+  var newPlayer = new Player(startX, startY)
   newPlayer.id = "BOT_" + badbotcount
   badbotcount++;
 
