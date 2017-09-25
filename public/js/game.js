@@ -107,7 +107,7 @@ function leaveGame() {
   userDataRef3.update({
     "active": 0
   });
-  window.location.replace("http://localhost:8080/");
+  window.location.replace("https://spot-the-human.herokuapp.com/");
 };
 
 

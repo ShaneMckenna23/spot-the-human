@@ -11,7 +11,7 @@
 
     localStorage.setItem("user", username);
 
-    window.location.replace("http://localhost:8080/game");
+    window.location.replace("https://spot-the-human.herokuapp.com/game");
   }
   
   // Function to get get form values
