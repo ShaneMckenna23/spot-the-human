@@ -1,4 +1,86 @@
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var config = {
+  apiKey: "AIzaSyDJhFgFb2cMRO6RddCibBOXToa0OaFoLf8",
+  authDomain: "spot-the-human.firebaseapp.com",
+  databaseURL: "https://spot-the-human.firebaseio.com",
+  projectId: "spot-the-human",
+  storageBucket: "spot-the-human.appspot.com",
+  messagingSenderId: "185370764051"
+};
+firebase.initializeApp(config);
+
+// Reference messages collection
+var userRef = firebase.database().ref('user');
+
+///Set up score
+var username = localStorage.getItem("user");
+document.getElementById('username').innerHTML = username;
+
+displayUsernames();
+getUserDetails(username)
+
+// Save message to firebase
+function getUserDetails(username){
+  findUser(username)
+}
+
+function findUser(username){
+  firebase.database().ref().on('value', function(snapshot) {
+    var data = snapshot.val();
+    if(data){
+      for (item in data.user) {
+        var user = data.user[item].username
+        if(user == username){
+          console.log("User found: " + user + " = " + username)
+          return processUser(data.user[item])
+        }
+      }
+      return processUser(false) 
+    }
+    return processUser(false) 
+  });
+}
+
+function processUser(user){
+  if(user == false){
+    createNewUser(username);
+    //display username and score = 0
+  }
+  //display username and getScore and set active
+}
+
+function createNewUser(username){
+  var newUserRef = userRef.push();
+  newUserRef.set({
+      username: username,
+      score: 0,
+      active: 1
+  });
+}
+
+function displayUsernames(){
+  firebase.database().ref().on('value', function(snapshot) {
+      var activeUsers = [];
+      var data = snapshot.val();
+      if(data){
+        for (item in data.user) {
+          var active = data.user[item].active
+          if(active == 1){
+            console.log("is 1")
+            activeUsers.push(data.user[item])
+          }
+        }   
+      }
+      if(activeUsers.length >0){
+        activeUsers.forEach(function(item){
+          document.getElementById("userList").innerHTML += "<p><h3>" + item.username + " score: " + item.score+ "<h3/></p>";
+        })
+      }
+  });
+}
+
+
+//Game
+var game = new Phaser.Game(1105, 600, Phaser.CANVAS, 'phaser', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
     game.load.image('backdrop', 'assets/backdrop.png');
@@ -21,7 +103,7 @@ var isIntermission = true
 function create() {
     socket = io.connect()
 
-    game.world.setBounds(0, 0, 800, 600);
+    game.world.setBounds(0, 0, 1105, 600);
 
     game.add.sprite(0, 0, 'backdrop');
 
