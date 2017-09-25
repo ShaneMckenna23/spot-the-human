@@ -10,6 +10,7 @@ firebase.initializeApp(config);
 
 // Reference messages collection
 var userRef = firebase.database().ref('user');
+var userDataKey;
 
 ///Set up score
 var username = localStorage.getItem("user");
@@ -31,21 +32,27 @@ function findUser(username){
         var user = data.user[item].username
         if(user == username){
           console.log("User found: " + user + " = " + username)
+          userDataKey = item
           return processUser(data.user[item])
         }
       }
-      return processUser(false) 
     }
     return processUser(false) 
   });
 }
 
+//bad code everywhere :D
+setTimeout(function(){
+  setUserActive();
+},2000)
+
+
 function processUser(user){
   if(user == false){
     createNewUser(username);
-    //display username and score = 0
+  }else{
+    score = user.score
   }
-  //display username and getScore and set active
 }
 
 function createNewUser(username){
@@ -65,18 +72,43 @@ function displayUsernames(){
         for (item in data.user) {
           var active = data.user[item].active
           if(active == 1){
-            console.log("is 1")
             activeUsers.push(data.user[item])
           }
         }   
       }
-      if(activeUsers.length >0){
+      if(activeUsers.length > 0){
+        document.getElementById("userList").innerHTML = ""
         activeUsers.forEach(function(item){
-          document.getElementById("userList").innerHTML += "<p><h3>" + item.username + " score: " + item.score+ "<h3/></p>";
+          if(typeof item != 'undefined'){
+            document.getElementById("userList").innerHTML += "<p><h3>" + item.username + " score: " + item.score+ "<h3/></p>";     
+          }
         })
       }
   });
 }
+
+//save score
+setInterval(function(){
+  var userDataRef = userRef.child(userDataKey);
+  userDataRef.update({
+    "score": score
+  });
+}, 2000)
+
+function setUserActive(){
+  var userDataRef2 = userRef.child(userDataKey);
+  userDataRef2.update({
+    "active": 1
+  });
+}
+
+function leaveGame() {
+  var userDataRef3 = userRef.child(userDataKey);
+  userDataRef3.update({
+    "active": 0
+  });
+  window.location.replace("http://localhost:8080/");
+};
 
 
 //Game
@@ -277,9 +309,15 @@ function isPlayer (x,y) {
   for (var i = 0; i < enemies.length; i++) {
     var xPos = enemies[i].player.x
     var yPos = enemies[i].player.y
-    if ( x > xPos-30 && x < xPos+30) {
-      if( y > yPos-30 && y < yPos+30){
-        increaseScore()
+
+    if ( x > xPos && x < xPos+64) {
+      if( y > yPos && y < yPos+64){
+        var isBot = enemies[i].player.name.substring(0, 3);
+        if(isBot == "BOT"){
+          decreaseScore()
+        }else{
+          increaseScore()
+        }
       }
     }
   }
@@ -290,5 +328,10 @@ var score = 0;
 
 function increaseScore(){
   score++;
+  document.getElementById('score').innerHTML = "Score: " + score
+}
+
+function decreaseScore(){
+  score-= 100;
   document.getElementById('score').innerHTML = "Score: " + score
 }

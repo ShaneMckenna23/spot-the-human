@@ -58,7 +58,7 @@ function init () {
   // Start listening for events
   setEventHandlers()
   startGameTimer()
-  testBot()
+  badBot()
 }
 
 function startGameTimer(){
@@ -169,11 +169,14 @@ function playerById (id) {
   return false
 }
 
+var badbotcount = 1
+
 // New player has joined
-function testBot () {
+function badBot () {
   // Create a new player
   var newPlayer = new Player(400, 300)
-  newPlayer.id = "testBot"
+  newPlayer.id = "BOT_" + badbotcount
+  badbotcount++;
 
   // Broadcast new player to connected socket clients
   socket.sockets.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
