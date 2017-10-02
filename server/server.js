@@ -239,7 +239,7 @@ function okBot () {
 
   setInterval(function(){
     direction = Math.floor(Math.random() * 4);
-  },150)
+  },1000)
 
   setInterval(function(){
     if(newPlayer.getX()>1105){
@@ -260,16 +260,16 @@ function okBot () {
 
     switch(direction){
       case 0:
-        newPlayer.setX(newPlayer.getX()+2.5)
+        newPlayer.setX(newPlayer.getX()+2)
       break;
       case 1:
-        newPlayer.setX(newPlayer.getX()-2.5)
+        newPlayer.setX(newPlayer.getX()-2)
       break;
       case 2:
-        newPlayer.setY(newPlayer.getY()+2.5)
+        newPlayer.setY(newPlayer.getY()+2)
       break;
       case 3:
-        newPlayer.setY(newPlayer.getY()-2.5)
+        newPlayer.setY(newPlayer.getY()-2)
       break;
     }
     socket.sockets.emit('move player', { id: newPlayer.id, x: newPlayer.getX(), y:newPlayer.getY()} )  
