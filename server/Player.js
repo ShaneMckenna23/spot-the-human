@@ -20,6 +20,10 @@ var Player = function (startX, startY) {
       return score
     }
 
+    var getId = function () {
+      return id
+    }
+
     var setScore = function (newScore) {
       score = newScore
     }
@@ -32,10 +36,12 @@ var Player = function (startX, startY) {
       y = newY
     }
 
+    
     // Define which variables and methods can be accessed
     return {
       getX: getX,
       getY: getY,
+      getId: getId,
       setX: setX,
       setY: setY,
       id: id

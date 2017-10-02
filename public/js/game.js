@@ -231,7 +231,6 @@ var setEventHandlers = function () {
   // Move player
   function onMovePlayer (data) {
     var movePlayer = playerById(data.id)
-  
     // Player not found
     if (!movePlayer) {
       console.log('Player not found: ', data.id)
@@ -239,6 +238,8 @@ var setEventHandlers = function () {
     }
   
     // Update player position
+    console.log("current: "+ movePlayer.player.y)
+    console.log("to: " + data.y)
     movePlayer.player.x = data.x
     movePlayer.player.y = data.y
   }
@@ -290,7 +291,7 @@ function update() {
 
 function render() {
     //game.debug.cameraInfo(game.camera, 500, 32);
-    //game.debug.spriteCoords(player, 32, 32);
+    game.debug.spriteCoords(player, 32, 32);
 }
 
 // Find player by ID

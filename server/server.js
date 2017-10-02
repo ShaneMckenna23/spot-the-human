@@ -20,18 +20,6 @@ var gameTime = 10000
 var intermissionTime = 5000
 var isIntermission = true
 
-var easystar = new easystarjs.js();
-var grid = [[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0]];
-
-easystar.setGrid(grid);
-
-easystar.setAcceptableTiles([0]);
-
-
 /* ************************************************
 ** GAME INITIALISATION
 ************************************************ */
@@ -47,10 +35,19 @@ var server = http.createServer(
   init()
 })
 
+
+var grid = [] // 1100x600 2d array for easystar
+var row = [];
+for(var i=0; i<1100; i++){
+  row.push(0)
+}
+for(var j = 0; j<600; j++){
+  grid.push(row)
+}
+
 function init () {
   // Create an empty array to store players
   players = []
-  bots = []
 
   // Attach Socket.IO to server
   socket = io.listen(server)
@@ -60,6 +57,10 @@ function init () {
   startGameTimer()
   badBot()
   badBot()
+  okBot()
+  okBot()
+  copyCatBot();
+  copyCatBot();
 }
 
 function startGameTimer(){
@@ -170,40 +171,94 @@ function playerById (id) {
   return false
 }
 
-var badbotcount = 1
+var botcount = 1
 
 // New player has joined
 function badBot () {
   // Create a new player
-  var startX = Math.round(Math.random() * (400) + 200)
-  var startY = Math.round(Math.random() * (350) + 150)
+  var startX = Math.round(Math.random() * (800) + 100)
+  var startY = Math.round(Math.random() * (4) + 100)
   var newPlayer = new Player(startX, startY)
-  newPlayer.id = "BOT_" + badbotcount
-  badbotcount++;
+  newPlayer.id = "BOT_" + botcount
+  botcount++;
 
   // Broadcast new player to connected socket clients
   socket.sockets.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
 
   setInterval(function(){
-    if(newPlayer.getX()>800){
-      newPlayer.setX(-20)
+    if(newPlayer.getX()>1105){
+      newPlayer.setX(-10)
     }
 
-    if(newPlayer.getX()<0){
-      newPlayer.setX(800)
+    if(newPlayer.getX()<-10){
+      newPlayer.setX(1105)
     }
     
     if(newPlayer.getY()>600){
-      newPlayer.setY(-20)
+      newPlayer.setY(-10)
     } 
 
-    if(newPlayer.getY()<0){
+    if(newPlayer.getY()<-10){
       newPlayer.setY(600)
     }
         
     var rand = Math.floor(Math.random() * 4);
 
     switch(rand){
+      case 0:
+        newPlayer.setX(newPlayer.getX()+4)
+      break;
+      case 1:
+        newPlayer.setX(newPlayer.getX()-4)
+      break;
+      case 2:
+        newPlayer.setY(newPlayer.getY()+4)
+      break;
+      case 3:
+        newPlayer.setY(newPlayer.getY()-4)
+      break;
+    }
+    socket.sockets.emit('move player', { id: newPlayer.id, x: newPlayer.getX(), y:newPlayer.getY()} )  
+  },15)
+  // Add new player to the players array
+  players.push(newPlayer)
+}
+
+function okBot () {
+  // Create a new player
+  var startX = Math.round(Math.random() * (800) + 100)
+  var startY = Math.round(Math.random() * (4) + 100)
+  var newPlayer = new Player(startX, startY)
+  newPlayer.id = "BOT_" + botcount
+  botcount++;
+
+  // Broadcast new player to connected socket clients
+  socket.sockets.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
+
+  var direction = 0;
+
+  setInterval(function(){
+    direction = Math.floor(Math.random() * 4);
+  },150)
+
+  setInterval(function(){
+    if(newPlayer.getX()>1105){
+      newPlayer.setX(-10)
+    }
+
+    if(newPlayer.getX()<-10){
+      newPlayer.setX(1105)
+    }
+    
+    if(newPlayer.getY()>600){
+      newPlayer.setY(-10)
+    } 
+
+    if(newPlayer.getY()<-10){
+      newPlayer.setY(600)
+    }
+
+    switch(direction){
       case 0:
         newPlayer.setX(newPlayer.getX()+2.5)
       break;
@@ -221,4 +276,102 @@ function badBot () {
   },10)
   // Add new player to the players array
   players.push(newPlayer)
+}
+
+
+var easystar = new easystarjs.js();
+easystar.setGrid(grid);
+easystar.setAcceptableTiles([0]);
+easystar.enableDiagonals();
+
+function copyCatBot () {
+  // Create a new player
+  var startX = Math.round(Math.random() * (400) + 200)
+  var startY = Math.round(Math.random() * (350) + 150)
+  var newPlayer = new Player(startX, startY)
+  newPlayer.id = "BOT_" + botcount
+  botcount++;
+
+  // Broadcast new player to connected socket clients
+  socket.sockets.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
+
+  var currentNextPointX 
+  var currentNextPointY
+
+  setInterval(function(){            	
+    if(newPlayer.getX()>1105){
+      newPlayer.setX(-10)
+    }
+
+    if(newPlayer.getX()<-10){
+      newPlayer.setX(1105)
+    }
+
+    
+    if(newPlayer.getY()>600){
+      newPlayer.setY(-10)
+    } 
+
+    if(newPlayer.getY()<-10){
+      newPlayer.setY(600)
+    }
+    socket.sockets.emit('move player', { id: newPlayer.id, x: newPlayer.getX(), y:newPlayer.getY()} ) 
+  },6)
+
+
+  var PlayerX = 0;
+  var PlayerY = 0;
+  var followPlayer;
+
+
+
+  setInterval(function(){
+    if(followPlayer){
+      PlayerX = followPlayer.getX()
+      PlayerY = followPlayer.getY()   
+    }  
+  },10)
+
+  setInterval(function(){
+    try{
+      easystar.findPath(newPlayer.getX(), newPlayer.getY(), PlayerX,PlayerY,
+      function(path) {
+        if (path.length > 0) {
+          currentNextPointX = path[1].x;
+          currentNextPointY = path[1].y;
+          newPlayer.setY(currentNextPointY)
+          newPlayer.setX(currentNextPointX)
+        }
+      }
+    );
+    easystar.calculate();
+  }
+  catch(e){
+  }
+}, 6)
+
+ setInterval(function(){
+  if(players.length > 0){
+    var humanPlayers = removeBots()
+    if(humanPlayers.length > 0){
+      var randPlayer = Math.round(Math.random() * (humanPlayers.length-1) + 0)
+      followPlayer = humanPlayers[randPlayer]
+    }
+  }
+ },5000)
+
+  // Add new player to the players array
+  players.push(newPlayer)
+}
+
+function removeBots(){
+  var humanPlayers = []
+  var allPlayers = players
+  for(var i=0;i<allPlayers.length; i++){
+    var item = allPlayers[i]
+    if(item.id.substring(0,3) != "BOT"){
+      humanPlayers.push(item)
+    }
+  }
+  return humanPlayers
 }
