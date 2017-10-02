@@ -238,8 +238,6 @@ var setEventHandlers = function () {
     }
   
     // Update player position
-    console.log("current: "+ movePlayer.player.y)
-    console.log("to: " + data.y)
     movePlayer.player.x = data.x
     movePlayer.player.y = data.y
   }
