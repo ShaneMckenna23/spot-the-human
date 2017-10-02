@@ -56,7 +56,7 @@ function init () {
   setEventHandlers()
   startGameTimer()
   badBot()
-  badBot()
+//  badBot()
   okBot()
   okBot()
   //copyCatBot();
