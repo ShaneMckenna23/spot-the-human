@@ -59,7 +59,7 @@ function init () {
   badBot()
   okBot()
   okBot()
-  copyCatBot();
+  //copyCatBot();
   copyCatBot();
 }
 
